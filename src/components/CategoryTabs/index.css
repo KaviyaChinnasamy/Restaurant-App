@@ -1,0 +1,11 @@
+.category-container {
+  display: flex;
+  margin: 20px 0;
+}
+.button {
+  background-color: #e0e0e0;
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
