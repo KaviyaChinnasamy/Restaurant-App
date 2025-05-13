@@ -1,71 +1,79 @@
+import {useState, useContext} from 'react'
+
+import CartContext from '../../context/CartContext'
+
 import './index.css'
 
-const DishItem = props => {
-  const {dishData, addItemToCart, removeItemFromCart, cartList} = props
-
+const DishItem = ({dishDetails}) => {
   const {
-    addOnCat,
-    dishAvailability,
-    dishCalories,
+    dishName,
+    dishType,
+    dishPrice,
     dishCurrency,
     dishDescription,
-    dishId,
     dishImage,
-    dishName,
-    dishPrice,
-    dishType,
-  } = dishData
+    dishCalories,
+    addonCat,
+    dishAvailability,
+  } = dishDetails
 
-  const addItem = () => {
-    addItemToCart(dishData)
-  }
+  const [quantity, setQuantity] = useState(0)
+  const {addCartItem} = useContext(CartContext)
 
-  const removeItem = () => {
-    removeItemFromCart(dishData)
-  }
+  const onIncreaseQuantity = () => setQuantity(prevState => prevState + 1)
 
-  const symbolBorderStyle =
-    dishType === 1 ? 'non-veg-symbol-border' : 'veg-symbol-border'
+  const onDecreaseQuantity = () =>
+    setQuantity(prevState => (prevState > 0 ? prevState - 1 : 0))
 
-  const symbolStyle = dishType === 1 ? 'non-veg-symbol' : 'veg-symbol'
+  const onAddItemToCart = () => addCartItem({...dishDetails, quantity})
 
-  const dish = cartList.find(eachDish => eachDish.dishId === dishId)
-  const dishQuantity = dish ? dish.quantity : 0
-
-  const customizationsAvaliable = addOnCat.length > 0
+  const renderControllerButton = () => (
+    <div className="controller-container d-flex align-items-center bg-success">
+      <button className="button" type="button" onClick={onDecreaseQuantity}>
+        -
+      </button>
+      <p className="quantity">{quantity}</p>
+      <button className="button" type="button" onClick={onIncreaseQuantity}>
+        +
+      </button>
+    </div>
+  )
 
   return (
-    <li className="each-dish-container">
-      <div className={`${symbolBorderStyle}`}>
-        <div className={`${symbolStyle}`} />
+    <li className="mb-3 p-3 dish-item-container d-flex">
+      <div
+        className={`veg-border ${dishType === 1 ? 'non-veg-border' : ''} me-3`}
+      >
+        <div className={`veg-round ${dishType === 1 ? 'non-veg-round' : ''}`} />
       </div>
-      <div className="dish-content-container">
-        <h2 className="dish-name">{dishName}</h2>
-        <p className="dish-curreny-price">
+      <div className="dish-details-container">
+        <h1 className="dish-name">{dishName}</h1>
+        <p className="dish-currency-price">
           {dishCurrency} {dishPrice}
         </p>
         <p className="dish-description">{dishDescription}</p>
-        {dishAvailability ? (
-          <div className="dish-amount-container">
-            <button type="button" className="btn-style" onClick={removeItem}>
-              -
-            </button>
-            <p className="dish-quantity">{dishQuantity}</p>
-            <button type="button" className="btn-style" onClick={addItem}>
-              +
-            </button>
-          </div>
-        ) : (
-          <p className="dish-not-available">Not available</p>
+        {dishAvailability && renderControllerButton()}
+        {!dishAvailability && (
+          <p className="not-availability-text text-danger">Not available</p>
         )}
-        {customizationsAvaliable && (
-          <p className="dish-customise">Customizations available</p>
+        {addonCat.length !== 0 && (
+          <p className="addon-availability-text mb-0">
+            Customizations available
+          </p>
+        )}
+        {quantity > 0 && (
+          <button
+            type="button"
+            className="btn btn-outline-primary mt-3"
+            onClick={onAddItemToCart}
+          >
+            ADD TO CART
+          </button>
         )}
       </div>
-      <p className="dish-calories">{dishCalories} calories</p>
-      <div className="dish-img-container">
-        <img className="dish-img" src={dishImage} alt={dishName} />
-      </div>
+
+      <p className="dish-calories text-warning">{dishCalories} calories</p>
+      <img className="dish-image" alt={dishName} src={dishImage} />
     </li>
   )
 }
