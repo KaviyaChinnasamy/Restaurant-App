@@ -14,8 +14,8 @@ const DishCategories = props => {
     <li className={`each-category ${activeCategoryStyle}`}>
       <button
         onClick={changeActiveCategory}
-        type="button"
-        className="each-category-btn"
+        type='button'
+        className='each-category-btn'
       >
         {menuCategory}
       </button>
